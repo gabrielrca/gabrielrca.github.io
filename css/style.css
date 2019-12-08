@@ -15,6 +15,11 @@ p{
 	padding-top:5px;
 }
 
+.content{
+	max-width: 500px;
+	margin: auto;
+}
+
 .line{
 	background:#f1f1f1;
 	height:1px;
