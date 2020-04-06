@@ -1,6 +1,6 @@
 {
 "companyName": "DefaultCompany",
-"productName": "New Unity Project",
+"productName": "Dino Adventure",
 "dataUrl": "dino_adventure.data.unityweb",
 "wasmCodeUrl": "dino_adventure.wasm.code.unityweb",
 "wasmFrameworkUrl": "dino_adventure.wasm.framework.unityweb",
