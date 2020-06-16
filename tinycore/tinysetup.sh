@@ -1,5 +1,3 @@
-#!/bin/bash
-
 echo "tc:1234567tiny" | sudo chpasswd
 tce-load -wi openssh
 sudo /usr/local/etc/init.d/openssh start
