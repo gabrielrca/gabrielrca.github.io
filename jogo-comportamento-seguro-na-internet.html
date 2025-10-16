@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -68,11 +69,13 @@
             align-items: center;
         }
 
-        #dice-result, #player-turn {
+        #dice-result,
+        #player-turn {
             background-color: #e9ecef;
             padding: 10px 20px;
             border-radius: 8px;
-            min-width: 150px; /* Garante espaço para o texto "Sorteando..." */
+            min-width: 150px;
+            /* Garante espaço para o texto "Sorteando..." */
         }
 
         /* Tabuleiro */
@@ -93,7 +96,7 @@
             font-weight: bold;
             padding: 5px;
             position: relative;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -106,51 +109,221 @@
             align-self: flex-end;
         }
 
-        .square.start { background-color: #d4edda; border-color: #c3e6cb; }
-        .square.finish { background-color: #ffd1dc; border-color: #ffb6c1; font-size: 14px; }
-        .square.good { background-color: #cce5ff; border-color: #b8daff; }
-        .square.bad { background-color: #fff3cd; border-color: #ffeeba; }
-        .square.normal { background-color: #e2e3e5; }
+        .square.start {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .square.finish {
+            background-color: #ffd1dc;
+            border-color: #ffb6c1;
+            font-size: 14px;
+        }
+
+        .square.good {
+            background-color: #cce5ff;
+            border-color: #b8daff;
+        }
+
+        .square.bad {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
+
+        .square.normal {
+            background-color: #e2e3e5;
+        }
 
         /* Posicionamento da Trilha */
-        .square[data-square="1"] { grid-column: 1; grid-row: 1; }
-        .square[data-square="2"] { grid-column: 2; grid-row: 1; }
-        .square[data-square="3"] { grid-column: 3; grid-row: 1; }
-        .square[data-square="4"] { grid-column: 4; grid-row: 1; }
-        .square[data-square="5"] { grid-column: 5; grid-row: 1; }
-        .square[data-square="6"] { grid-column: 6; grid-row: 1; }
-        .square[data-square="7"] { grid-column: 7; grid-row: 1; }
-        .square[data-square="8"] { grid-column: 8; grid-row: 1; }
-        .square[data-square="9"] { grid-column: 8; grid-row: 2; }
-        .square[data-square="10"] { grid-column: 7; grid-row: 2; }
-        .square[data-square="11"] { grid-column: 6; grid-row: 2; }
-        .square[data-square="12"] { grid-column: 5; grid-row: 2; }
-        .square[data-square="13"] { grid-column: 4; grid-row: 2; }
-        .square[data-square="14"] { grid-column: 3; grid-row: 2; }
-        .square[data-square="15"] { grid-column: 2; grid-row: 2; }
-        .square[data-square="16"] { grid-column: 1; grid-row: 2; }
-        .square[data-square="17"] { grid-column: 1; grid-row: 3; }
-        .square[data-square="18"] { grid-column: 2; grid-row: 3; }
-        .square[data-square="19"] { grid-column: 3; grid-row: 3; }
-        .square[data-square="20"] { grid-column: 4; grid-row: 3; }
-        .square[data-square="21"] { grid-column: 5; grid-row: 3; }
-        .square[data-square="22"] { grid-column: 6; grid-row: 3; }
-        .square[data-square="23"] { grid-column: 7; grid-row: 3; }
-        .square[data-square="24"] { grid-column: 8; grid-row: 3; }
-        .square[data-square="25"] { grid-column: 8; grid-row: 4; }
-        .square[data-square="26"] { grid-column: 7; grid-row: 4; }
-        .square[data-square="27"] { grid-column: 6; grid-row: 4; }
-        .square[data-square="28"] { grid-column: 5; grid-row: 4; }
-        .square[data-square="29"] { grid-column: 4; grid-row: 4; }
-        .square[data-square="30"] { grid-column: 3; grid-row: 4; }
-        .square[data-square="31"] { grid-column: 2; grid-row: 4; }
-        .square[data-square="32"] { grid-column: 1; grid-row: 4; }
-        .square[data-square="33"] { grid-column: 1; grid-row: 5; }
-        .square[data-square="34"] { grid-column: 2; grid-row: 5; }
-        .square[data-square="35"] { grid-column: 3; grid-row: 5; }
-        .square[data-square="36"] { grid-column: 4; grid-row: 5; }
-        .square[data-square="37"] { grid-column: 5; grid-row: 5; }
-        .square[data-square="38"] { grid-column: 6; grid-row: 5; }
+        .square[data-square="1"] {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .square[data-square="2"] {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .square[data-square="3"] {
+            grid-column: 3;
+            grid-row: 1;
+        }
+
+        .square[data-square="4"] {
+            grid-column: 4;
+            grid-row: 1;
+        }
+
+        .square[data-square="5"] {
+            grid-column: 5;
+            grid-row: 1;
+        }
+
+        .square[data-square="6"] {
+            grid-column: 6;
+            grid-row: 1;
+        }
+
+        .square[data-square="7"] {
+            grid-column: 7;
+            grid-row: 1;
+        }
+
+        .square[data-square="8"] {
+            grid-column: 8;
+            grid-row: 1;
+        }
+
+        .square[data-square="9"] {
+            grid-column: 8;
+            grid-row: 2;
+        }
+
+        .square[data-square="10"] {
+            grid-column: 7;
+            grid-row: 2;
+        }
+
+        .square[data-square="11"] {
+            grid-column: 6;
+            grid-row: 2;
+        }
+
+        .square[data-square="12"] {
+            grid-column: 5;
+            grid-row: 2;
+        }
+
+        .square[data-square="13"] {
+            grid-column: 4;
+            grid-row: 2;
+        }
+
+        .square[data-square="14"] {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .square[data-square="15"] {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        .square[data-square="16"] {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .square[data-square="17"] {
+            grid-column: 1;
+            grid-row: 3;
+        }
+
+        .square[data-square="18"] {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        .square[data-square="19"] {
+            grid-column: 3;
+            grid-row: 3;
+        }
+
+        .square[data-square="20"] {
+            grid-column: 4;
+            grid-row: 3;
+        }
+
+        .square[data-square="21"] {
+            grid-column: 5;
+            grid-row: 3;
+        }
+
+        .square[data-square="22"] {
+            grid-column: 6;
+            grid-row: 3;
+        }
+
+        .square[data-square="23"] {
+            grid-column: 7;
+            grid-row: 3;
+        }
+
+        .square[data-square="24"] {
+            grid-column: 8;
+            grid-row: 3;
+        }
+
+        .square[data-square="25"] {
+            grid-column: 8;
+            grid-row: 4;
+        }
+
+        .square[data-square="26"] {
+            grid-column: 7;
+            grid-row: 4;
+        }
+
+        .square[data-square="27"] {
+            grid-column: 6;
+            grid-row: 4;
+        }
+
+        .square[data-square="28"] {
+            grid-column: 5;
+            grid-row: 4;
+        }
+
+        .square[data-square="29"] {
+            grid-column: 4;
+            grid-row: 4;
+        }
+
+        .square[data-square="30"] {
+            grid-column: 3;
+            grid-row: 4;
+        }
+
+        .square[data-square="31"] {
+            grid-column: 2;
+            grid-row: 4;
+        }
+
+        .square[data-square="32"] {
+            grid-column: 1;
+            grid-row: 4;
+        }
+
+        .square[data-square="33"] {
+            grid-column: 1;
+            grid-row: 5;
+        }
+
+        .square[data-square="34"] {
+            grid-column: 2;
+            grid-row: 5;
+        }
+
+        .square[data-square="35"] {
+            grid-column: 3;
+            grid-row: 5;
+        }
+
+        .square[data-square="36"] {
+            grid-column: 4;
+            grid-row: 5;
+        }
+
+        .square[data-square="37"] {
+            grid-column: 5;
+            grid-row: 5;
+        }
+
+        .square[data-square="38"] {
+            grid-column: 6;
+            grid-row: 5;
+        }
 
         #start-area {
             grid-column: 1 / 9;
@@ -170,34 +343,90 @@
             position: absolute;
             transition: all 0.3s ease-in-out;
             border: 2px solid white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
-        #pawn1 { background-color: #dc3545; top: 10px; left: 10px; }
-        #pawn2 { background-color: #007bff; top: 10px; right: 10px; }
-        #pawn3 { background-color: #ffc107; bottom: 10px; left: 10px; }
-        #pawn4 { background-color: #28a745; bottom: 10px; right: 10px; }
+
+        #pawn1 {
+            background-color: #dc3545;
+            top: 10px;
+            left: 10px;
+        }
+
+        #pawn2 {
+            background-color: #007bff;
+            top: 10px;
+            right: 10px;
+        }
+
+        #pawn3 {
+            background-color: #ffc107;
+            bottom: 10px;
+            left: 10px;
+        }
+
+        #pawn4 {
+            background-color: #28a745;
+            bottom: 10px;
+            right: 10px;
+        }
 
         /* Modal / Janela de Pop-up */
         .modal {
-            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center;
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
         }
+
         .modal-content {
-            background-color: #fff; padding: 30px; border-radius: 15px; text-align: center;
-            max-width: 500px; box-shadow: 0 5px 20px rgba(0,0,0,0.25); animation: fadeIn 0.5s;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+            animation: fadeIn 0.5s;
         }
-        .modal-content.good { background-color: #d4edda; }
-        .modal-content.bad { background-color: #f8d7da; }
+
+        .modal-content.good {
+            background-color: #d4edda;
+        }
+
+        .modal-content.bad {
+            background-color: #f8d7da;
+        }
+
         #modal-close-btn {
-            margin-top: 20px; padding: 10px 20px; font-size: 1em; cursor: pointer; border-radius: 8px;
-            border: none; background-color: #007bff; color: white;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 8px;
+            border: none;
+            background-color: #007bff;
+            color: white;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
     </style>
 </head>
+
 <body>
 
     <h1>Jogo do Comportamento Seguro na Internet</h1>
@@ -270,9 +499,12 @@
                 const number = document.createElement('span');
                 number.classList.add('number');
                 number.textContent = i;
-                if (i === 1) { square.classList.add('start'); text.textContent = 'Partida';
-                } else if (i === totalSquares) { square.classList.add('finish'); text.textContent = 'CHEGADA';
-                } else if (specialSquares[i]) { const rule = specialSquares[i]; square.classList.add(rule.type); text.textContent = rule.message;
+                if (i === 1) {
+                    square.classList.add('start'); text.textContent = 'Partida';
+                } else if (i === totalSquares) {
+                    square.classList.add('finish'); text.textContent = 'CHEGADA';
+                } else if (specialSquares[i]) {
+                    const rule = specialSquares[i]; square.classList.add(rule.type); text.textContent = rule.message;
                 } else { square.classList.add('normal'); }
                 square.appendChild(text); square.appendChild(number); board.appendChild(square);
             }
@@ -285,7 +517,7 @@
         }
 
         function getPlayerColor(playerId) {
-            const colors = {1: '#dc3545', 2: '#007bff', 3: '#ffc107', 4: '#28a745'};
+            const colors = { 1: '#dc3545', 2: '#007bff', 3: '#ffc107', 4: '#28a745' };
             return colors[playerId] || '#6c757d';
         }
 
@@ -305,8 +537,10 @@
         function showModal(type, message, callback) {
             modalTitle.textContent = 'Atenção!';
             modalContent.classList.remove('good', 'bad');
-            if (type === 'good') { modalTitle.textContent = 'Parabéns!'; modalContent.classList.add('good');
-            } else if (type === 'bad') { modalTitle.textContent = 'Cuidado!'; modalContent.classList.add('bad');
+            if (type === 'good') {
+                modalTitle.textContent = 'Parabéns!'; modalContent.classList.add('good');
+            } else if (type === 'bad') {
+                modalTitle.textContent = 'Cuidado!'; modalContent.classList.add('bad');
             } else if (type === 'win') { modalTitle.textContent = 'VITÓRIA!'; }
             modalText.textContent = message;
             modal.style.display = 'flex';
@@ -341,12 +575,12 @@
         }
 
         function checkWinCondition(player, callback) {
-             if (player.position >= totalSquares) {
+            if (player.position >= totalSquares) {
                 gameActive = false;
                 showModal('win', `O Jogador ${player.id} (${player.color}) venceu o jogo e se tornou um Cidadão Digital exemplar!`, () => {
-                   rollBtn.textContent = "Jogar Novamente";
-                   rollBtn.onclick = () => location.reload();
-                   rollBtn.disabled = false;
+                    rollBtn.textContent = "Jogar Novamente";
+                    rollBtn.onclick = () => location.reload();
+                    rollBtn.disabled = false;
                 });
             } else { if (callback) callback(); }
         }
@@ -401,8 +635,8 @@
 
                 // Se chegar ao final durante o avanço, para e declara a vitória
                 if (player.position >= totalSquares && direction > 0) {
-                     checkWinCondition(player);
-                     return;
+                    checkWinCondition(player);
+                    return;
                 }
 
                 setTimeout(moveOneStep, 400); // Continua para o próximo passo
@@ -417,6 +651,8 @@
             updateUI();
         };
     </script>
-<footer style="font-size: 8px;">Criado por Gabriel Caldas - Instituto de Computação - UFRJ -  Inspirado em https://internetsegura.br/ | Licenciado em Creative Commons (CC BY-NC-ND 4.0)</footer>
+    <footer style="font-size: 8px;">Criado por Gabriel Caldas - Instituto de Computação - UFRJ - Para a SNCT 2025 -
+        Inspirado em https://internetsegura.br/ | Licenciado em Creative Commons (CC BY-NC-ND 4.0)</footer>
 </body>
+
 </html>
