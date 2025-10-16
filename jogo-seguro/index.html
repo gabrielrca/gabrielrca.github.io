@@ -17,11 +17,35 @@
             justify-content: center;
             padding: 20px;
             margin: 0;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* --- CSS PARA O BACKGROUND --- */
+        #background-images {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        #background-images img {
+            position: absolute;
+            width: 150px;
+            height: auto;
+            opacity: 0.6;
+            filter: hue-rotate(0deg) saturate(100%) brightness(100%);
+            transition: none;
         }
 
         h1 {
             color: #0056b3;
             text-shadow: 1px 1px 2px #ccc;
+            position: relative;
+            z-index: 1;
         }
 
         /* Painel de Controle do Jogo */
@@ -34,6 +58,8 @@
             text-align: center;
             width: 90%;
             max-width: 800px;
+            position: relative;
+            z-index: 1;
         }
 
         #roll-dice-btn {
@@ -75,7 +101,6 @@
             padding: 10px 20px;
             border-radius: 8px;
             min-width: 150px;
-            /* Garante espaço para o texto "Sorteando..." */
         }
 
         /* Tabuleiro */
@@ -87,6 +112,7 @@
             width: 840px;
             margin: 0 auto;
             position: relative;
+            z-index: 1;
         }
 
         .square {
@@ -333,6 +359,8 @@
             justify-content: center;
             border: 2px dashed #ccc;
             background-color: #f8f9fa;
+            position: relative;
+            z-index: 1;
         }
 
         /* Peões dos Jogadores */
@@ -344,6 +372,7 @@
             transition: all 0.3s ease-in-out;
             border: 2px solid white;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 2;
         }
 
         #pawn1 {
@@ -424,12 +453,18 @@
                 transform: scale(1);
             }
         }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            margin-top: 20px;
+        }
     </style>
 </head>
 
 <body>
 
-    <h1>Jogo do Comportamento Seguro na Internet</h1>
+    <div id="background-images"></div>
 
     <div class="game-controls">
         <button id="roll-dice-btn">Lançar o Dado</button>
@@ -460,11 +495,9 @@
             { id: 1, position: 0, pawnElement: document.getElementById('pawn1'), color: 'Vermelho', skipTurn: false },
             { id: 2, position: 0, pawnElement: document.getElementById('pawn2'), color: 'Azul', skipTurn: false },
         ];
-
         const totalSquares = 38;
         let currentPlayerIndex = 0;
         let gameActive = true;
-
         const specialSquares = {
             4: { type: 'good', message: 'Conversou com seus pais sobre um desafio da internet. (ande 3 casas)', action: 'advance', value: 3 },
             8: { type: 'good', message: 'Denunciou um perfil que estava te ofendendo! (jogue novamente)', action: 'roll_again' },
@@ -479,6 +512,13 @@
             34: { type: 'good', message: 'Ajudou alguém a ter um comportamento seguro na internet. (jogue novamente)', action: 'roll_again' },
             36: { type: 'bad', message: 'Não foi num passeio com medo de ficar sem internet. (volte 6 casas)', action: 'back', value: 6 }
         };
+
+        // --- OBJETOS DE ÁUDIO ---
+        const jumpSound = new Audio('jump.wav');
+        const dadoSound = new Audio('dado.flac');
+        const happySound = new Audio('happy.wav');
+        // --- INÍCIO DA MODIFICAÇÃO (1/2) ---
+        const sadSound = new Audio('sad.wav');
 
         const board = document.querySelector('.board');
         const rollBtn = document.getElementById('roll-dice-btn');
@@ -499,13 +539,10 @@
                 const number = document.createElement('span');
                 number.classList.add('number');
                 number.textContent = i;
-                if (i === 1) {
-                    square.classList.add('start'); text.textContent = 'Partida';
-                } else if (i === totalSquares) {
-                    square.classList.add('finish'); text.textContent = 'CHEGADA';
-                } else if (specialSquares[i]) {
-                    const rule = specialSquares[i]; square.classList.add(rule.type); text.textContent = rule.message;
-                } else { square.classList.add('normal'); }
+                if (i === 1) { square.classList.add('start'); text.textContent = 'Partida'; }
+                else if (i === totalSquares) { square.classList.add('finish'); text.textContent = 'CHEGADA'; }
+                else if (specialSquares[i]) { const rule = specialSquares[i]; square.classList.add(rule.type); text.textContent = rule.message; }
+                else { square.classList.add('normal'); }
                 square.appendChild(text); square.appendChild(number); board.appendChild(square);
             }
         }
@@ -523,7 +560,11 @@
 
         function movePawn(player) {
             const targetSquare = player.position > 0 ? board.querySelector(`.square[data-square="${player.position}"]`) : document.getElementById('start-area');
-            if (targetSquare) { targetSquare.appendChild(player.pawnElement); }
+            if (targetSquare) {
+                targetSquare.appendChild(player.pawnElement);
+                jumpSound.currentTime = 0;
+                jumpSound.play();
+            }
         }
 
         function nextTurn() {
@@ -538,38 +579,38 @@
             modalTitle.textContent = 'Atenção!';
             modalContent.classList.remove('good', 'bad');
             if (type === 'good') {
-                modalTitle.textContent = 'Parabéns!'; modalContent.classList.add('good');
-            } else if (type === 'bad') {
-                modalTitle.textContent = 'Cuidado!'; modalContent.classList.add('bad');
-            } else if (type === 'win') { modalTitle.textContent = 'VITÓRIA!'; }
+                modalTitle.textContent = 'Parabéns!';
+                modalContent.classList.add('good');
+                happySound.currentTime = 0;
+                happySound.play();
+            }
+            else if (type === 'bad') {
+                modalTitle.textContent = 'Cuidado!';
+                modalContent.classList.add('bad');
+                // --- INÍCIO DA MODIFICAÇÃO (2/2) ---
+                sadSound.currentTime = 0;
+                sadSound.play();
+                // --- FIM DA MODIFICAÇÃO (2/2) ---
+            }
+            else if (type === 'win') {
+                modalTitle.textContent = 'VITÓRIA!';
+                happySound.currentTime = 0;
+                happySound.play();
+            }
             modalText.textContent = message;
             modal.style.display = 'flex';
             modalCloseBtn.onclick = () => { modal.style.display = 'none'; if (callback) callback(); };
         }
 
-        // --- FUNÇÃO DE AÇÃO EM CASA ESPECIAL (MODIFICADA) ---
         function handleSpecialSquare(player) {
             const squareRule = specialSquares[player.position];
             if (!squareRule) { nextTurn(); return; }
-
             showModal(squareRule.type, squareRule.message, () => {
                 switch (squareRule.action) {
-                    case 'advance':
-                        // Inicia a animação de avanço
-                        animateSpecialMove(player, squareRule.value);
-                        break;
-                    case 'back':
-                        // Inicia a animação de retrocesso
-                        animateSpecialMove(player, -squareRule.value);
-                        break;
-                    case 'skip_turn':
-                        player.skipTurn = true;
-                        nextTurn();
-                        break;
-                    case 'roll_again':
-                        rollBtn.disabled = false;
-                        updateUI();
-                        break;
+                    case 'advance': animateSpecialMove(player, squareRule.value); break;
+                    case 'back': animateSpecialMove(player, -squareRule.value); break;
+                    case 'skip_turn': player.skipTurn = true; nextTurn(); break;
+                    case 'roll_again': rollBtn.disabled = false; updateUI(); break;
                 }
             });
         }
@@ -589,18 +630,21 @@
             if (!gameActive) return;
             rollBtn.disabled = true;
             const finalRoll = Math.floor(Math.random() * 6) + 1;
+            dadoSound.loop = true;
+            dadoSound.play();
             const animationInterval = setInterval(() => {
                 diceResultEl.textContent = `Sorteando... ${Math.floor(Math.random() * 6) + 1}`;
             }, 80);
             setTimeout(() => {
                 clearInterval(animationInterval);
+                dadoSound.pause();
+                dadoSound.currentTime = 0;
                 diceResultEl.textContent = `Dado: ${finalRoll}`;
                 const currentPlayer = players[currentPlayerIndex];
                 animateMoveStepByStep(currentPlayer, finalRoll);
             }, 2000);
         });
 
-        // --- FUNÇÃO DE ANIMAÇÃO DO DADO ---
         function animateMoveStepByStep(player, steps) {
             if (steps <= 0) {
                 setTimeout(() => checkWinCondition(player, () => handleSpecialSquare(player)), 400);
@@ -616,40 +660,60 @@
             setTimeout(() => animateMoveStepByStep(player, steps - 1), 400);
         }
 
-        // --- NOVA FUNÇÃO DE ANIMAÇÃO PARA CASAS ESPECIAIS ---
         function animateSpecialMove(player, steps) {
-            const direction = Math.sign(steps); // 1 para frente, -1 para trás
+            const direction = Math.sign(steps);
             let stepsLeft = Math.abs(steps);
-
             function moveOneStep() {
                 if (stepsLeft <= 0) {
-                    // Animação terminou, verifica vitória e passa o turno
                     checkWinCondition(player, nextTurn);
                     return;
                 }
-
                 player.position += direction;
-                player.position = Math.max(1, Math.min(player.position, totalSquares)); // Garante que não saia do tabuleiro
+                player.position = Math.max(1, Math.min(player.position, totalSquares));
                 movePawn(player);
                 stepsLeft--;
-
-                // Se chegar ao final durante o avanço, para e declara a vitória
                 if (player.position >= totalSquares && direction > 0) {
                     checkWinCondition(player);
                     return;
                 }
-
-                setTimeout(moveOneStep, 400); // Continua para o próximo passo
+                setTimeout(moveOneStep, 400);
             }
-
-            moveOneStep(); // Inicia o primeiro passo
+            moveOneStep();
         }
 
         window.onload = () => {
             createBoard();
             players.forEach(p => movePawn(p));
             updateUI();
+            generateBackgroundImages();
         };
+
+        function generateBackgroundImages() {
+            const backgroundContainer = document.getElementById('background-images');
+            const numImages = 150;
+            const imagePath = 'logo.svg';
+            for (let i = 0; i < numImages; i++) {
+                const img = document.createElement('img');
+                img.src = imagePath;
+                img.alt = 'Logo de Fundo';
+                const top = Math.random() * 100;
+                const left = Math.random() * 100;
+                img.style.top = `${top}vh`;
+                img.style.left = `${left}vw`;
+                const rotation = Math.random() * 360 - 180;
+                const scale = Math.random() * 1 + 0.5;
+                const flip = Math.random() < 0.5 ? -1 : 1;
+                const opacity = Math.random() * 0.6 + 0.2;
+                const hueRotate = Math.random() * 360;
+                const saturate = Math.random() * 150 + 50;
+                const brightness = Math.random() * 50 + 75;
+                img.style.transform = `rotate(${rotation}deg) scale(${scale * flip}, ${scale})`;
+                img.style.opacity = opacity;
+                img.style.filter = `hue-rotate(${hueRotate}deg) saturate(${saturate}%) brightness(${brightness}%)`;
+                img.style.zIndex = Math.floor(Math.random() * 5) - 10;
+                backgroundContainer.appendChild(img);
+            }
+        }
     </script>
     <footer style="font-size: 8px;">Criado por Gabriel Caldas - Instituto de Computação - UFRJ - Para a SNCT 2025 -
         Inspirado em https://internetsegura.br/ | Licenciado em Creative Commons (CC BY-NC-ND 4.0)</footer>
