@@ -107,9 +107,12 @@
         .board {
             display: grid;
             grid-template-columns: repeat(8, 100px);
+            /* 8 Colunas */
             grid-template-rows: repeat(5, 100px);
+            /* 5 Linhas */
             gap: 5px;
             width: 840px;
+            /* 8 * 100 + (7 * 5) = 835, arredondado */
             margin: 0 auto;
             position: relative;
             z-index: 1;
@@ -142,7 +145,14 @@
         .square.finish {
             justify-content: center;
             background-color: #21f04e;
+            /* Verde inicial */
         }
+
+        .square.finish {
+            background-color: #ffd1dc;
+            /* Rosa final */
+        }
+
 
         .square.start .text-content,
         .square.finish .text-content {
@@ -182,7 +192,8 @@
             display: none;
         }
 
-        /* Posicionamento da Trilha */
+        /* --- POSICIONAMENTO ATUALIZADO PARA 40 CASAS --- */
+        /* Linha 1: Esquerda para Direita (1-8) */
         .square[data-square="1"] {
             grid-column: 1;
             grid-row: 1;
@@ -223,6 +234,7 @@
             grid-row: 1;
         }
 
+        /* Linha 2: Direita para Esquerda (9-16) */
         .square[data-square="9"] {
             grid-column: 8;
             grid-row: 2;
@@ -263,6 +275,7 @@
             grid-row: 2;
         }
 
+        /* Linha 3: Esquerda para Direita (17-24) */
         .square[data-square="17"] {
             grid-column: 1;
             grid-row: 3;
@@ -303,6 +316,7 @@
             grid-row: 3;
         }
 
+        /* Linha 4: Direita para Esquerda (25-32) */
         .square[data-square="25"] {
             grid-column: 8;
             grid-row: 4;
@@ -343,6 +357,7 @@
             grid-row: 4;
         }
 
+        /* Linha 5: Esquerda para Direita (33-40) */
         .square[data-square="33"] {
             grid-column: 1;
             grid-row: 5;
@@ -372,6 +387,19 @@
             grid-column: 6;
             grid-row: 5;
         }
+
+        .square[data-square="39"] {
+            grid-column: 7;
+            grid-row: 5;
+        }
+
+        .square[data-square="40"] {
+            grid-column: 8;
+            grid-row: 5;
+        }
+
+        /* CHEGADA */
+
 
         #start-area {
             grid-column: 1 / 9;
@@ -490,9 +518,11 @@
     <div id="background-images"></div>
 
     <div class="game-controls">
-        <button id="roll-dice-btn">Lançar o Dado</button>
+
         <div class="game-info">
+
             <div id="player-turn">Vez do Jogador 1</div>
+            <button id="roll-dice-btn">Lançar o Dado</button>
             <div id="dice-result">Dado: -</div>
         </div>
     </div>
@@ -518,25 +548,83 @@
             { id: 1, position: 0, pawnElement: document.getElementById('pawn1'), color: 'Vermelho', skipTurn: false },
             { id: 2, position: 0, pawnElement: document.getElementById('pawn2'), color: 'Azul', skipTurn: false },
         ];
-        const totalSquares = 38;
+        const totalSquares = 40; // <-- ATUALIZADO PARA 40
         let currentPlayerIndex = 0;
         let gameActive = true;
 
-        // --- MAPA DE IMAGENS E REGRAS ---
-        const specialSquares = {
-            4: { type: 'good', message: 'Alguém te desafiou na Internet e você conversou com seus pais sobre este desafio da Internet. (ande 3 casas)', action: 'advance', value: 3, icon: 'icone-pais-conversa.png' },
-            8: { type: 'good', message: 'Um perfil estava te ofendendo na Internet. Você denunciou o perfil que estava te ofendendo! (jogue novamente)', action: 'roll_again', icon: 'icone-denuncia-perfil.png' },
-            10: { type: 'bad', message: 'Você fez um trabalho para escola e não citou na lição a fonte que você copiou da Internet. (fique sem jogar)', action: 'skip_turn', icon: 'icone-nao-citou-fonte.png' },
-            13: { type: 'good', message: 'Apareceu uma super promoção na sua rede social. Você percebeu que aquela superpromoção era golpe! (ande 6 casas)', action: 'advance', value: 6, icon: 'icone-golpe-desmascarado.png' },
-            16: { type: 'bad', message: 'Muitas pessoas enviam mensagens de conteúdo falso e você compartilhou uma postagem duvidosa. (fique sem jogar)', action: 'skip_turn', icon: 'icone-compartilhar-duvidoso.png' },
-            19: { type: 'good', message: 'Uma pessoa na Internet estava pedindo fotos suas. Você bloqueou o perfil que estava pedindo fotos suas! (jogue novamente)', action: 'roll_again', icon: 'icone-bloquear-pedidos.png' },
-            22: { type: 'bad', message: 'Você ficou irritado na Internet e postou uma mensagem com raiva, sem pensar. (fique sem jogar)', action: 'skip_turn', icon: 'icone-postar-com-raiva.png' },
-            25: { type: 'good', message: 'O mundo real é mais legal que o virtual. Você saiu da internet e foi passear ou ler um livro. (ande 7 casas)', action: 'advance', value: 7, icon: 'icone-atividade-offline.png' },
-            28: { type: 'bad', message: 'Muitas pessoas fazem bulling na Internet e você curtiu mensagem falando mal de alguém. (volte 4 casas)', action: 'back', value: 4, icon: 'icone-curtir-bullying.png' },
-            31: { type: 'bad', message: 'A gente precisa ter responsabilidade. Você ficou até tarde jogando e dormiu na aula. (volte 9 casas)', action: 'back', value: 9, icon: 'icone-dormir-na-aula.png' },
-            34: { type: 'good', message: 'Muitas pessoas não sabem se comportar na Internet. Você ajudou alguém a ter um comportamento seguro na internet. (jogue novamente)', action: 'roll_again', icon: 'icone-ajudar-amigo.png' },
-            36: { type: 'bad', message: 'Você não foi num passeio com medo de ficar sem internet. (volte 6 casas)', action: 'back', value: 6, icon: 'icone-medo-sem-internet.png' }
-        };
+        // --- INÍCIO DA MODIFICAÇÃO: LÓGICA DE RANDOMIZAÇÃO INTELIGENTE ---
+
+        // 1. Definição MESTRA das 12 regras especiais.
+        const ruleDefinitions = [ // Transformado em array para facilitar o shuffle
+            { type: 'good', message: 'Alguém te desafiou na Internet e você conversou com seus pais sobre este desafio da Internet. (ande 3 casas)', action: 'advance', value: 3, icon: 'icone-pais-conversa.png' },
+            { type: 'good', message: 'Um perfil estava te ofendendo na Internet. Você denunciou o perfil que estava te ofendendo! (jogue novamente)', action: 'roll_again', icon: 'icone-denuncia-perfil.png' },
+            { type: 'bad', message: 'Você fez um trabalho para escola e não citou na lição a fonte que você copiou da Internet. (fique sem jogar)', action: 'skip_turn', icon: 'icone-nao-citou-fonte.png' },
+            { type: 'good', message: 'Apareceu uma super promoção na sua rede social. Você percebeu que aquela superpromoção era golpe! (ande 6 casas)', action: 'advance', value: 6, icon: 'icone-golpe-desmascarado.png' },
+            { type: 'bad', message: 'Muitas pessoas enviam mensagens de conteúdo falso e você compartilhou uma postagem duvidosa. (fique sem jogar)', action: 'skip_turn', icon: 'icone-compartilhar-duvidoso.png' },
+            { type: 'good', message: 'Uma pessoa na Internet estava pedindo fotos suas. Você bloqueou o perfil que estava pedindo fotos suas! (jogue novamente)', action: 'roll_again', icon: 'icone-bloquear-pedidos.png' },
+            { type: 'bad', message: 'Você ficou irritado na Internet e postou uma mensagem com raiva, sem pensar. (fique sem jogar)', action: 'skip_turn', icon: 'icone-postar-com-raiva.png' },
+            { type: 'good', message: 'O mundo real é mais legal que o virtual. Você saiu da internet e foi passear ou ler um livro. (ande 7 casas)', action: 'advance', value: 7, icon: 'icone-atividade-offline.png' },
+            { type: 'bad', message: 'Muitas pessoas fazem bulling na Internet e você curtiu mensagem falando mal de alguém. (volte 4 casas)', action: 'back', value: 4, icon: 'icone-curtir-bullying.png' },
+            { type: 'bad', message: 'A gente precisa ter responsabilidade. Você ficou até tarde jogando e dormiu na aula. (volte 9 casas)', action: 'back', value: 9, icon: 'icone-dormir-na-aula.png' },
+            { type: 'good', message: 'Muitas pessoas não sabem se comportar na Internet. Você ajudou alguém a ter um comportamento seguro na internet. (jogue novamente)', action: 'roll_again', icon: 'icone-ajudar-amigo.png' },
+            { type: 'bad', message: 'Você não foi num passeio com medo de ficar sem internet. (volte 6 casas)', action: 'back', value: 6, icon: 'icone-medo-sem-internet.png' }
+        ];
+
+        // 2. Função para embaralhar um array (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array; // Retorna o array embaralhado
+        }
+
+        // 3. Função para gerar as posições especiais garantindo o espaçamento
+        function generateSpacedSpecialSquares(rules, total, start, end) {
+            const numRules = rules.length;
+            const possiblePositions = [];
+            for (let i = start + 1; i < end; i++) { // Posições entre start e end
+                possiblePositions.push(i);
+            }
+
+            const shuffledPositions = shuffleArray([...possiblePositions]); // Embaralha cópia das posições
+            const finalSpecialSquares = {};
+            const assignedPositions = new Set(); // Guarda posições já usadas ou bloqueadas
+
+            const shuffledRules = shuffleArray([...rules]); // Embaralha cópia das regras
+
+            for (const rule of shuffledRules) {
+                let placed = false;
+                for (let i = 0; i < shuffledPositions.length; i++) {
+                    const pos = shuffledPositions[i];
+
+                    // Verifica se a posição ou seus vizinhos já foram usados/bloqueados
+                    if (!assignedPositions.has(pos) && !assignedPositions.has(pos - 1) && !assignedPositions.has(pos + 1)) {
+                        finalSpecialSquares[pos] = rule; // Atribui a regra à posição
+                        assignedPositions.add(pos);      // Marca a posição como usada
+                        // Não é mais necessário bloquear vizinhos aqui, a verificação no 'if' já garante
+                        shuffledPositions.splice(i, 1); // Remove a posição da lista de disponíveis
+                        placed = true;
+                        break; // Vai para a próxima regra
+                    }
+                }
+                // Se não conseguiu colocar (improvável com 40 casas), loga um erro
+                if (!placed) {
+                    console.error("Não foi possível encontrar uma posição espaçada para uma regra. Tentando a próxima.");
+                    // Poderia tentar colocar em uma posição adjacente como fallback, mas é raro precisar.
+                }
+
+            }
+            console.log("Casas Especiais Geradas:", finalSpecialSquares); // Para depuração
+            return finalSpecialSquares;
+        }
+
+
+        // 4. Gera as casas especiais randomizadas e espaçadas
+        const specialSquares = generateSpacedSpecialSquares(ruleDefinitions, totalSquares, 1, 40); // Gera entre 2 e 39
+
+        // --- FIM DA MODIFICAÇÃO ---
+
 
         // --- OBJETOS DE ÁUDIO ---
         const jumpSound = new Audio('jump.wav');
@@ -571,10 +659,10 @@
                 if (i === 1) {
                     square.classList.add('start');
                     textContainer.textContent = 'PARTIDA';
-                } else if (i === totalSquares) {
+                } else if (i === totalSquares) { // Agora i === 40
                     square.classList.add('finish');
                     textContainer.textContent = 'CHEGADA';
-                } else if (specialSquares[i]) {
+                } else if (specialSquares[i]) { // Verifica se 'i' está no objeto randomizado
                     const rule = specialSquares[i];
                     square.classList.add(rule.type);
                     textContainer.textContent = rule.message; // Ocultado via CSS
@@ -596,7 +684,7 @@
 
         function updateUI() {
             const currentPlayer = players[currentPlayerIndex];
-            playerTurnEl.textContent = `Vez do Jogador ${currentPlayer.id} (${currentPlayer.color})`;
+            playerTurnEl.textContent = `Jogador ${currentPlayer.id}: ${currentPlayer.color}`;
             rollBtn.style.backgroundColor = getPlayerColor(currentPlayer.id);
         }
 
@@ -661,7 +749,7 @@
         }
 
         function checkWinCondition(player, callback) {
-            if (player.position >= totalSquares) {
+            if (player.position >= totalSquares) { // Verifica se >= 40
                 gameActive = false;
                 showModal('win', `O Jogador ${player.id} (${player.color}) venceu o jogo e se tornou um Cidadão Digital exemplar!`, () => {
                     rollBtn.textContent = "Jogar Novamente";
@@ -696,14 +784,17 @@
                 return;
             }
             player.position++;
-            if (player.position > totalSquares) player.position = totalSquares;
+            // Garante que não ultrapasse o total de casas
+            player.position = Math.min(player.position, totalSquares);
             movePawn(player);
+            // Verifica vitória após cada passo
             if (player.position >= totalSquares) {
                 setTimeout(() => checkWinCondition(player), 400);
                 return;
             }
             setTimeout(() => animateMoveStepByStep(player, steps - 1), 400);
         }
+
 
         function animateSpecialMove(player, steps) {
             const direction = Math.sign(steps);
@@ -727,7 +818,7 @@
         }
 
         window.onload = () => {
-            createBoard();
+            createBoard(); // Cria o tabuleiro com as casas já randomizadas
             players.forEach(p => movePawn(p));
             updateUI();
             generateBackgroundImages();
