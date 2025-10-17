@@ -126,24 +126,29 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            align-items: center;
             text-align: center;
         }
 
         .square .number {
-            font-size: 1.5em;
+            font-size: 1.2em;
             color: #555;
-            align-self: flex-end;
+            position: absolute;
+            top: 5px;
+            right: 5px;
         }
 
-        .square.start {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-        }
-
+        .square.start,
         .square.finish {
-            background-color: #ffd1dc;
-            border-color: #ffb6c1;
-            font-size: 14px;
+            justify-content: center;
+            background-color: #21f04e;
+        }
+
+        .square.start .text-content,
+        .square.finish .text-content {
+            font-size: 1.5em;
+            font-weight: bold;
+
         }
 
         .square.good {
@@ -158,6 +163,23 @@
 
         .square.normal {
             background-color: #e2e3e5;
+        }
+
+        /* Estilos para a ilustração */
+        .square .illustration {
+            width: 70px;
+            height: 70px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        /* Oculta o texto descritivo nas casas especiais */
+        .square.good .text-content,
+        .square.bad .text-content {
+            display: none;
         }
 
         /* Posicionamento da Trilha */
@@ -372,7 +394,8 @@
             transition: all 0.3s ease-in-out;
             border: 2px solid white;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-            z-index: 2;
+            z-index: 50;
+            /* Garante que os peões fiquem acima das ilustrações */
         }
 
         #pawn1 {
@@ -498,26 +521,27 @@
         const totalSquares = 38;
         let currentPlayerIndex = 0;
         let gameActive = true;
+
+        // --- MAPA DE IMAGENS E REGRAS ---
         const specialSquares = {
-            4: { type: 'good', message: 'Conversou com seus pais sobre um desafio da internet. (ande 3 casas)', action: 'advance', value: 3 },
-            8: { type: 'good', message: 'Denunciou um perfil que estava te ofendendo! (jogue novamente)', action: 'roll_again' },
-            10: { type: 'bad', message: 'Não citou a fonte da lição que copiou da internet. (fique sem jogar)', action: 'skip_turn' },
-            13: { type: 'good', message: 'Percebeu que aquela superpromoção era golpe! (ande 6 casas)', action: 'advance', value: 6 },
-            16: { type: 'bad', message: 'Compartilhou postagem duvidosa. (fique sem jogar)', action: 'skip_turn' },
-            19: { type: 'good', message: 'Bloqueou um perfil que estava pedindo fotos suas! (jogue novamente)', action: 'roll_again' },
-            22: { type: 'bad', message: 'Postou uma mensagem com raiva, sem pensar. (fique sem jogar)', action: 'skip_turn' },
-            25: { type: 'good', message: 'Saiu da internet e foi passear ou ler um livro. (ande 7 casas)', action: 'advance', value: 7 },
-            28: { type: 'bad', message: 'Curtiu mensagem falando mal de alguém. (volte 4 casas)', action: 'back', value: 4 },
-            31: { type: 'bad', message: 'Ficou até tarde jogando e dormiu na aula. (volte 9 casas)', action: 'back', value: 9 },
-            34: { type: 'good', message: 'Ajudou alguém a ter um comportamento seguro na internet. (jogue novamente)', action: 'roll_again' },
-            36: { type: 'bad', message: 'Não foi num passeio com medo de ficar sem internet. (volte 6 casas)', action: 'back', value: 6 }
+            4: { type: 'good', message: 'Alguém te desafiou na Internet e você conversou com seus pais sobre este desafio da Internet. (ande 3 casas)', action: 'advance', value: 3, icon: 'icone-pais-conversa.png' },
+            8: { type: 'good', message: 'Um perfil estava te ofendendo na Internet. Você denunciou o perfil que estava te ofendendo! (jogue novamente)', action: 'roll_again', icon: 'icone-denuncia-perfil.png' },
+            10: { type: 'bad', message: 'Você fez um trabalho para escola e não citou na lição a fonte que você copiou da Internet. (fique sem jogar)', action: 'skip_turn', icon: 'icone-nao-citou-fonte.png' },
+            13: { type: 'good', message: 'Apareceu uma super promoção na sua rede social. Você percebeu que aquela superpromoção era golpe! (ande 6 casas)', action: 'advance', value: 6, icon: 'icone-golpe-desmascarado.png' },
+            16: { type: 'bad', message: 'Muitas pessoas enviam mensagens de conteúdo falso e você compartilhou uma postagem duvidosa. (fique sem jogar)', action: 'skip_turn', icon: 'icone-compartilhar-duvidoso.png' },
+            19: { type: 'good', message: 'Uma pessoa na Internet estava pedindo fotos suas. Você bloqueou o perfil que estava pedindo fotos suas! (jogue novamente)', action: 'roll_again', icon: 'icone-bloquear-pedidos.png' },
+            22: { type: 'bad', message: 'Você ficou irritado na Internet e postou uma mensagem com raiva, sem pensar. (fique sem jogar)', action: 'skip_turn', icon: 'icone-postar-com-raiva.png' },
+            25: { type: 'good', message: 'O mundo real é mais legal que o virtual. Você saiu da internet e foi passear ou ler um livro. (ande 7 casas)', action: 'advance', value: 7, icon: 'icone-atividade-offline.png' },
+            28: { type: 'bad', message: 'Muitas pessoas fazem bulling na Internet e você curtiu mensagem falando mal de alguém. (volte 4 casas)', action: 'back', value: 4, icon: 'icone-curtir-bullying.png' },
+            31: { type: 'bad', message: 'A gente precisa ter responsabilidade. Você ficou até tarde jogando e dormiu na aula. (volte 9 casas)', action: 'back', value: 9, icon: 'icone-dormir-na-aula.png' },
+            34: { type: 'good', message: 'Muitas pessoas não sabem se comportar na Internet. Você ajudou alguém a ter um comportamento seguro na internet. (jogue novamente)', action: 'roll_again', icon: 'icone-ajudar-amigo.png' },
+            36: { type: 'bad', message: 'Você não foi num passeio com medo de ficar sem internet. (volte 6 casas)', action: 'back', value: 6, icon: 'icone-medo-sem-internet.png' }
         };
 
         // --- OBJETOS DE ÁUDIO ---
         const jumpSound = new Audio('jump.wav');
         const dadoSound = new Audio('dado.flac');
         const happySound = new Audio('happy.wav');
-        // --- INÍCIO DA MODIFICAÇÃO (1/2) ---
         const sadSound = new Audio('sad.wav');
 
         const board = document.querySelector('.board');
@@ -530,20 +554,43 @@
         const modalText = document.getElementById('modal-text');
         const modalCloseBtn = document.getElementById('modal-close-btn');
 
+        // --- FUNÇÃO DE CRIAÇÃO DO TABULEIRO (COM ÍCONES) ---
         function createBoard() {
             for (let i = 1; i <= totalSquares; i++) {
                 const square = document.createElement('div');
                 square.classList.add('square');
                 square.dataset.square = i;
-                const text = document.createElement('span');
+
+                const textContainer = document.createElement('span');
+                textContainer.classList.add('text-content');
+
                 const number = document.createElement('span');
                 number.classList.add('number');
                 number.textContent = i;
-                if (i === 1) { square.classList.add('start'); text.textContent = 'Partida'; }
-                else if (i === totalSquares) { square.classList.add('finish'); text.textContent = 'CHEGADA'; }
-                else if (specialSquares[i]) { const rule = specialSquares[i]; square.classList.add(rule.type); text.textContent = rule.message; }
-                else { square.classList.add('normal'); }
-                square.appendChild(text); square.appendChild(number); board.appendChild(square);
+
+                if (i === 1) {
+                    square.classList.add('start');
+                    textContainer.textContent = 'PARTIDA';
+                } else if (i === totalSquares) {
+                    square.classList.add('finish');
+                    textContainer.textContent = 'CHEGADA';
+                } else if (specialSquares[i]) {
+                    const rule = specialSquares[i];
+                    square.classList.add(rule.type);
+                    textContainer.textContent = rule.message; // Ocultado via CSS
+
+                    const illustration = document.createElement('div');
+                    illustration.classList.add('illustration');
+                    illustration.style.backgroundImage = `url('${rule.icon}')`;
+                    square.appendChild(illustration);
+
+                } else {
+                    square.classList.add('normal');
+                }
+
+                square.appendChild(textContainer);
+                square.appendChild(number);
+                board.appendChild(square);
             }
         }
 
@@ -587,10 +634,8 @@
             else if (type === 'bad') {
                 modalTitle.textContent = 'Cuidado!';
                 modalContent.classList.add('bad');
-                // --- INÍCIO DA MODIFICAÇÃO (2/2) ---
                 sadSound.currentTime = 0;
                 sadSound.play();
-                // --- FIM DA MODIFICAÇÃO (2/2) ---
             }
             else if (type === 'win') {
                 modalTitle.textContent = 'VITÓRIA!';
@@ -691,7 +736,7 @@
         function generateBackgroundImages() {
             const backgroundContainer = document.getElementById('background-images');
             const numImages = 150;
-            const imagePath = 'logo.svg';
+            const imagePath = 'logo.svg'; // Você pode usar .svg ou .png
             for (let i = 0; i < numImages; i++) {
                 const img = document.createElement('img');
                 img.src = imagePath;
@@ -715,7 +760,7 @@
             }
         }
     </script>
-    <footer style="font-size: 8px;">Criado por Gabriel Caldas - Instituto de Computação - UFRJ - Para a SNCT 2025 -
+    <footer style="font-size: 8px;">Instituto de Computação - UFRJ - Para a SNCT 2025 -
         Inspirado em https://internetsegura.br/ | Licenciado em Creative Commons (CC BY-NC-ND 4.0)</footer>
 </body>
 
